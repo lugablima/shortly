@@ -18,7 +18,7 @@ const databaseConfigDev = {
   database: process.env.DATABASE_NAME,
 };
 
-const databaseConfig = process.env.NODE_ENV === "production" ? databaseConfigProduction : databaseConfigDev;
+const databaseConfig = process.env.NODE_ENV === "development" ? databaseConfigDev : databaseConfigProduction;
 
 const connection = new Pool(databaseConfig);
 
