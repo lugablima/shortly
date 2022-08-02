@@ -1,0 +1,7 @@
+dump.sql
+.wakatime-project
+projeto16-shortly-back/node_modules/
+projeto16-shortly-back/.eslint*
+projeto16-shortly-back/.prettier*
+projeto16-shortly-back/.env
+projeto16-shortly-back/.env.dev
