@@ -50,7 +50,7 @@ export async function redirectShortUrl(req, res) {
 
     const {
       rows: [url],
-    } = await connection.query(`SELECT * FROM "shortUrls WHERE "shortUrl" = $1`, [shortUrl]);
+    } = await connection.query(`SELECT * FROM "shortUrls" WHERE "shortUrl" = $1`, [shortUrl]);
 
     if (!url) return res.sendStatus(404);
 
@@ -69,7 +69,9 @@ export async function redirectShortUrl(req, res) {
 
 export async function deleteShortUrl(req, res) {
   const { userId } = res.locals;
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+
+  if (!id) return res.sendStatus(404);
 
   try {
     const {
