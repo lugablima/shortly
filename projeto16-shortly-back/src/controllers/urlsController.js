@@ -2,17 +2,17 @@ import { customAlphabet } from "nanoid";
 import connection from "../db/postgres.js";
 
 const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-const SHORTURL_SIZE = 10;
+const SHORT_URL_SIZE = 10;
 
 export async function createShortUrl(req, res) {
   const { userId, url } = res.locals.data;
 
-  const nanoid = customAlphabet(ALPHABET, SHORTURL_SIZE);
+  const nanoid = customAlphabet(ALPHABET, SHORT_URL_SIZE);
 
   const shortUrl = nanoid();
 
   try {
-    await connection.query(`INSERT INTO ("userId", "shortUrl", url) VALUES ($1, $2, $3)`, [userId, shortUrl, url]);
+    await connection.query(`INSERT INTO "shortUrls" ("userId", "shortUrl", url) VALUES ($1, $2, $3)`, [userId, shortUrl, url]);
 
     res.status(201).send({ shortUrl });
   } catch (err) {
@@ -22,7 +22,9 @@ export async function createShortUrl(req, res) {
 }
 
 export async function getShortUrl(req, res) {
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+
+  if (!id) return res.sendStatus(404);
 
   try {
     const {
