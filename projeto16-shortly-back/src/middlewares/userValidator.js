@@ -1,4 +1,5 @@
-import { newUserSchema } from "../schemas/authSchema.js";
+import bcrypt from "bcryptjs";
+import { newUserSchema, userSchema } from "../schemas/authSchema.js";
 import connection from "../db/postgres.js";
 
 export async function validateNewUser(req, res, next) {
@@ -31,5 +32,30 @@ export async function validateNewUser(req, res, next) {
 }
 
 export async function validateUser(req, res, next) {
-  //
+  const user = req.body;
+
+  const { error } = userSchema.validate(user, { abortEarly: false });
+
+  if (error) {
+    return res.status(422).send(error.details.map((err) => ({ message: err.message })));
+  }
+
+  try {
+    const {
+      rows: [storedUser],
+    } = await connection.query(
+      `SELECT * FROM users 
+      WHERE email = $1`,
+      [user.email]
+    );
+
+    if (storedUser && bcrypt.compareSync(user.password, storedUser.password)) {
+      res.locals.user = storedUser;
+
+      next();
+    } else res.sendStatus(401);
+  } catch (err) {
+    console.log("Error validating user", err.message);
+    res.sendStatus(500);
+  }
 }
