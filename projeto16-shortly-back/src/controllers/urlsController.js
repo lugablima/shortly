@@ -68,5 +68,23 @@ export async function redirectShortUrl(req, res) {
 }
 
 export async function deleteShortUrl(req, res) {
-  //
+  const { userId } = res.locals;
+  const { id } = req.params;
+
+  try {
+    const {
+      rows: [shortUrl],
+    } = await connection.query(`SELECT * FROM "shortUrls" WHERE id = $1`, [id]);
+
+    if (!shortUrl) return res.sendStatus(404);
+
+    if (shortUrl.userId !== userId) return res.sendStatus(401);
+
+    await connection.query(`DELETE FROM "shortUrls" WHERE id = $1`, [id]);
+
+    res.sendStatus(204);
+  } catch (err) {
+    console.log("Error deleting short url", err.message);
+    res.sendStatus(500);
+  }
 }
