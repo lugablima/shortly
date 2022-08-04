@@ -43,3 +43,30 @@ export async function getShortUrl(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function redirectShortUrl(req, res) {
+  try {
+    const { shortUrl } = req.params;
+
+    const {
+      rows: [url],
+    } = await connection.query(`SELECT * FROM "shortUrls WHERE "shortUrl" = $1`, [shortUrl]);
+
+    if (!url) return res.sendStatus(404);
+
+    await connection.query(
+      `UPDATE "shortUrls" SET "visitCount" = "visitCount" + 1 
+      WHERE id = $1`,
+      [url.id]
+    );
+
+    res.redirect(url.url);
+  } catch (err) {
+    console.log("Error redirecting user to url", err.message);
+    res.sendStatus(500);
+  }
+}
+
+export async function deleteShortUrl(req, res) {
+  //
+}
