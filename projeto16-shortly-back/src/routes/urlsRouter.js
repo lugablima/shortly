@@ -1,6 +1,6 @@
 import { Router } from "express";
 import validateToken from "../middlewares/tokenValidator.js";
-import { validateUrl } from "../middlewares/urlValidator.js";
+import validateUrl from "../middlewares/urlValidator.js";
 import { createShortUrl, getShortUrl, redirectShortUrl, deleteShortUrl } from "../controllers/urlsController.js";
 
 const urlsRouter = Router();

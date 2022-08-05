@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { stripHtml } from "string-strip-html";
 import { newUserSchema, userSchema } from "../schemas/authSchema.js";
 import connection from "../db/postgres.js";
 
@@ -19,6 +20,8 @@ export async function validateNewUser(req, res, next) {
     );
 
     if (emailAlreadyExists) return res.sendStatus(409);
+
+    newUser.name = stripHtml(newUser.name).result.trim();
 
     delete newUser.confirmPassword;
 

@@ -1,6 +1,6 @@
 import urlSchema from "../schemas/urlsSchema.js";
 
-export async function validateUrl(req, res, next) {
+async function validateUrl(req, res, next) {
   const { body } = req;
   const { userId } = res.locals;
 
@@ -18,6 +18,4 @@ export async function validateUrl(req, res, next) {
   next();
 }
 
-export async function validateOther(req, res, next) {
-  //
-}
+export default validateUrl;
