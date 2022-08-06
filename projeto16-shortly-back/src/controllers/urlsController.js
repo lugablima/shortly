@@ -1,5 +1,6 @@
 import { customAlphabet } from "nanoid";
 import connection from "../db/postgres.js";
+import { insertNewShortUrl } from "../repositories/urlsRepository.js";
 
 const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const SHORT_URL_SIZE = 10;
@@ -12,7 +13,7 @@ export async function createShortUrl(req, res) {
   const shortUrl = nanoid();
 
   try {
-    await connection.query(`INSERT INTO "shortUrls" ("userId", "shortUrl", url) VALUES ($1, $2, $3)`, [userId, shortUrl, url]);
+    await insertNewShortUrl(userId, shortUrl, url);
 
     res.status(201).send({ shortUrl });
   } catch (err) {
@@ -20,6 +21,8 @@ export async function createShortUrl(req, res) {
     res.sendStatus(500);
   }
 }
+
+//  Parei aqui
 
 export async function getShortUrl(req, res) {
   const id = parseInt(req.params.id);

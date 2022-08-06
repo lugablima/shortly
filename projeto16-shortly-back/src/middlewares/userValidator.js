@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { stripHtml } from "string-strip-html";
 import { newUserSchema, userSchema } from "../schemas/authSchema.js";
-import connection from "../db/postgres.js";
+import authRepository from "../repositories/authRepository.js";
 
 export async function validateNewUser(req, res, next) {
   const newUser = req.body;
@@ -13,11 +13,9 @@ export async function validateNewUser(req, res, next) {
   }
 
   try {
-    const { rowCount: emailAlreadyExists } = await connection.query(
-      `SELECT * FROM users 
-      WHERE email = $1`,
-      [newUser.email]
-    );
+    const {
+      rows: [emailAlreadyExists],
+    } = await authRepository.getUserByEmail(newUser.email);
 
     if (emailAlreadyExists) return res.sendStatus(409);
 
@@ -46,11 +44,7 @@ export async function validateUser(req, res, next) {
   try {
     const {
       rows: [storedUser],
-    } = await connection.query(
-      `SELECT * FROM users 
-      WHERE email = $1`,
-      [user.email]
-    );
+    } = await authRepository.getUserByEmail(user.email);
 
     if (storedUser && bcrypt.compareSync(user.password, storedUser.password)) {
       res.locals.user = storedUser;
