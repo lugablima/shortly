@@ -5,7 +5,7 @@ const { Pool } = pg;
 
 const databaseConfigProduction = {
   connectionString: process.env.DATABASE_URL,
-  ss1: {
+  ssl: {
     rejectUnauthorized: false,
   },
 };
