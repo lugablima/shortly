@@ -1,6 +1,6 @@
 import "../setup.js";
 import jwt from "jsonwebtoken";
-import connection from "../db/postgres.js";
+import urlsRepository from "../repositories/urlsRepository.js";
 
 async function validateToken(req, res, next) {
   const { authorization } = req.headers;
@@ -13,7 +13,7 @@ async function validateToken(req, res, next) {
 
     const {
       rows: [session],
-    } = await connection.query(`SELECT * FROM sessions WHERE id = $1`, [data.sessionId]);
+    } = await urlsRepository.getSessionById(data.sessionId);
 
     res.locals.userId = session.userId;
 

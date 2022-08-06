@@ -1,4 +1,4 @@
-import connection from "../db/postgres.js";
+import usersRepository from "../repositories/usersRepository.js";
 
 async function getUser(req, res) {
   const { userId } = res.locals;
@@ -6,20 +6,7 @@ async function getUser(req, res) {
   try {
     const {
       rows: [user],
-    } = await connection.query(
-      `SELECT u.id, u.name, COALESCE(SUM(s."visitCount")::INTEGER, '0'::INTEGER) AS "visitCount",
-          CASE 
-            WHEN s."userId" IS NOT NULL THEN 
-              json_agg(json_build_object('id', s.id, 'shortUrl', s."shortUrl", 'url', s.url, 'visitCount', s."visitCount") ORDER BY s.id ASC)
-            ELSE 
-              '[]'::json
-          END AS "shortenedUrls"
-      FROM users u
-      LEFT JOIN "shortUrls" s ON s."userId" = u.id
-      WHERE u.id = $1
-      GROUP BY u.id, s."userId"`,
-      [userId]
-    );
+    } = await usersRepository.getUserInfosById(userId);
 
     if (!user) return res.sendStatus(404);
 
@@ -31,15 +18,3 @@ async function getUser(req, res) {
 }
 
 export default getUser;
-
-// SELECT u.id, u.name, COALESCE(SUM(s."visitCount"), 0) AS "visitCount",
-// 	CASE
-// 		WHEN s."userId" IS NOT NULL THEN
-// 			json_agg(json_build_object('id', s.id, 'shortUrl', s."shortUrl", 'url', s.url, 'visitCount', s."visitCount") ORDER BY s.id ASC)
-// 		ELSE
-// 			'[]'::json
-// 	END AS "shortenedUrls"
-// FROM users u
-// LEFT JOIN "shortUrls" s ON s."userId" = u.id
-// WHERE u.id = 3
-// GROUP BY u.id, s."userId";
